@@ -3,9 +3,11 @@
 
 #include "bitboard.h"
 #include "types.h"
+#include "position.h"
 
 int main() {
 
+    Position pos;
     Bitboard bb = 0;
     setBit(bb, E4);
     setBit(bb, A1);
@@ -16,7 +18,6 @@ int main() {
     std::cout << "Liczba bitów: " << popCount(bb) << std::endl;
 
     Bitboard tmp = bb;
-
     while(tmp) {
         std::cout << popLsb(tmp) << std::endl;
     }
@@ -24,5 +25,14 @@ int main() {
     printBoard(bb);
 
     printBoard(tmp);
+
+
+    setBit(pos.pieces[WHITE][ROOK], G1);
+    setBit(pos.pieces[BLACK][PAWN], A2);
+    pos.updateOccupancy();
+    printBoard(pos.occupancy[WHITE]);
+    printBoard(pos.occupancy[BLACK]);
+    printBoard(pos.occupancy[BOTH]);
+
     return 0;
 }

@@ -3,8 +3,10 @@
 #include <cstdint>
 
 using Bitboard = uint64_t;
-enum Color {WHITE, BLACK};
+enum Color {WHITE, BLACK, BOTH};
 enum PieceType {PAWN, KNIGHT, BISHOP, ROOK, QUEEN, KING};
+enum Castling {SHORT_WHITE = 1, LONG_WHITE = 2, SHORT_BLACK = 4, LONG_BLACK = 8};
+
 constexpr Bitboard RANK_1 = 0xFFULL;
 constexpr Bitboard RANK_2 = RANK_1 << 8;
 constexpr Bitboard RANK_3 = RANK_1 << 16;
@@ -37,6 +39,10 @@ enum Square
     A8, B8, C8, D8, E8, F8, G8, H8,
     NO_SQUARE
 };
+
+constexpr int rankOf(Square sq) { return sq / 8; }
+
+constexpr int fileOf(Square sq) { return sq % 8; }
 
 constexpr Square makeSquare(int file, int rank) { return Square(rank * 8 + file); }
 

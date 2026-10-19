@@ -5,4 +5,5 @@ set(CMAKE_CXX_STANDARD 20)
 
 add_executable(Vilinus main.cpp
         types.h
-        bitboard.h)
+        bitboard.h
+        position.h)
