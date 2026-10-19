@@ -23,5 +23,6 @@ int main() {
 
     printBoard(bb);
 
+    printBoard(tmp);
     return 0;
 }
