@@ -1,7 +1,39 @@
 #pragma once
 
+#include <cctype>
+
 #include "types.h"
 #include "bitboard.h"
+
+inline bool fenToFigure(char fen, Color& color, PieceType& pieceType)
+{
+    if (isupper(fen)) {color = WHITE;}
+    else {color = BLACK;}
+
+    switch (tolower(fen))
+    {
+        case 'p':
+            pieceType = PAWN;
+            return true;
+        case 'n':
+            pieceType = KNIGHT;
+            return true;
+        case 'b':
+            pieceType = BISHOP;
+            return true;
+        case 'r':
+            pieceType = ROOK;
+            return true;
+        case 'q':
+            pieceType = QUEEN;
+            return true;
+        case 'k':
+            pieceType = KING;
+            return true;
+        default:
+            return false;
+    }
+}
 
 struct Position
 {
