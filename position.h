@@ -1,9 +1,11 @@
 #pragma once
 
 #include <cctype>
+#include <string>
 
 #include "types.h"
 #include "bitboard.h"
+
 
 inline bool fenToFigure(char fen, Color& color, PieceType& pieceType)
 {
@@ -44,6 +46,7 @@ struct Position
     int moveCount = 1;
     int moveCount50Rule = 0;
     uint8_t castlingRights = 0;
+
     void updateOccupancy()
     {
         occupancy[WHITE] = 0;
@@ -56,5 +59,32 @@ struct Position
         }
         occupancy[BOTH] = occupancy[WHITE] | occupancy[BLACK];
 
+    }
+    
+    void loadFen(const std::string& fen)
+    {
+        *this = Position{};
+
+        int rank = 7;
+        int file = 0;
+        for (char fenChar : fen)
+        {
+            if (fenChar == ' ') { break; }
+            else if (fenChar == '/') { rank--; file = 0; }
+            else if (isdigit(fenChar)) { file += fenChar - '0'; }
+            else
+            {
+                Color color;
+                PieceType pieceType;
+
+                if (fenToFigure(fenChar, color, pieceType))
+                {
+                    setBit(pieces[color][pieceType], makeSquare(file, rank));
+                    file++;
+                }
+            }
+
+        }
+        updateOccupancy();
     }
 };
