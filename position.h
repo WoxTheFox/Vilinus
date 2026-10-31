@@ -2,12 +2,14 @@
 
 #include <cctype>
 #include <string>
+#include <sstream>
+
 
 #include "types.h"
 #include "bitboard.h"
 
 
-inline bool fenToFigure(char fen, Color& color, PieceType& pieceType)
+[[nodiscard]] inline bool fenToFigure(char fen, Color& color, PieceType& pieceType)
 {
     if (isupper(fen)) {color = WHITE;}
     else {color = BLACK;}
@@ -43,8 +45,8 @@ struct Position
     Bitboard occupancy[3] = {};
     Color onMove = WHITE;
     Square enPassant = NO_SQUARE;
-    int moveCount = 1;
-    int moveCount50Rule = 0;
+    unsigned int moveCount = 1;
+    unsigned int moveCount50Rule = 0;
     uint8_t castlingRights = 0;
 
     void updateOccupancy()
@@ -60,31 +62,70 @@ struct Position
         occupancy[BOTH] = occupancy[WHITE] | occupancy[BLACK];
 
     }
-    
+
     void loadFen(const std::string& fen)
     {
         *this = Position{};
 
-        int rank = 7;
-        int file = 0;
-        for (char fenChar : fen)
+        std::istringstream ss(fen);
+
+        std::string placing;
+        std::string side;
+        std::string castling;
+        std::string passant;
+
+        unsigned int rank = 7;
+        unsigned int file = 0;
+
+        ss >> placing >> side >> castling >> passant >> moveCount50Rule >> moveCount;
+
+        for (char place : placing)
         {
-            if (fenChar == ' ') { break; }
-            else if (fenChar == '/') { rank--; file = 0; }
-            else if (isdigit(fenChar)) { file += fenChar - '0'; }
+            if (place == '/') { rank--; file = 0; }
+            else if (isdigit(place)) { file += place - '0'; }
             else
             {
                 Color color;
                 PieceType pieceType;
 
-                if (fenToFigure(fenChar, color, pieceType))
+                if (fenToFigure(place, color, pieceType))
                 {
                     setBit(pieces[color][pieceType], makeSquare(file, rank));
                     file++;
                 }
             }
-
         }
+
+        onMove = side == "w" ? WHITE : BLACK;
+
+        for (char castle : castling)
+        {
+            switch (castle)
+            {
+                case 'K':
+                    castlingRights |= SHORT_WHITE;
+                    break;
+                case 'Q':
+                    castlingRights |= LONG_WHITE;
+                    break;
+                case 'k':
+                    castlingRights |= SHORT_BLACK;
+                    break;
+                case 'q':
+                    castlingRights |= LONG_BLACK;
+                    break;
+            }
+        }
+
+
+            if (passant != "-")
+            {
+                const unsigned int col = passant[0] - 'a';
+                const unsigned int row = passant[1] - '1';
+
+                enPassant = makeSquare(col, row);
+            }
+
         updateOccupancy();
     }
 };
