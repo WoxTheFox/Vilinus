@@ -6,10 +6,9 @@
 
 
 #include "types.h"
-#include "bitboard.h"
 
 
-[[nodiscard]] inline bool fenToFigure(char fen, Color& color, PieceType& pieceType)
+[[nodiscard]] inline bool fenToFigure(char fen, Color& color, PieceType& pieceType) noexcept
 {
     if (isupper(fen)) {color = WHITE;}
     else {color = BLACK;}
@@ -49,7 +48,7 @@ struct Position
     unsigned int moveCount50Rule = 0;
     uint8_t castlingRights = 0;
 
-    void updateOccupancy()
+    void updateOccupancy() noexcept
     {
         occupancy[WHITE] = 0;
         occupancy[BLACK] = 0;
@@ -74,12 +73,12 @@ struct Position
         std::string castling;
         std::string passant;
 
-        unsigned int rank = 7;
-        unsigned int file = 0;
+        int rank = 7;
+        int file = 0;
 
         ss >> placing >> side >> castling >> passant >> moveCount50Rule >> moveCount;
 
-        for (char place : placing)
+        for (const char place : placing)
         {
             if (place == '/') { rank--; file = 0; }
             else if (isdigit(place)) { file += place - '0'; }
@@ -98,7 +97,7 @@ struct Position
 
         onMove = side == "w" ? WHITE : BLACK;
 
-        for (char castle : castling)
+        for (const char castle : castling)
         {
             switch (castle)
             {
@@ -114,14 +113,15 @@ struct Position
                 case 'q':
                     castlingRights |= LONG_BLACK;
                     break;
+                default: ;
             }
         }
 
 
             if (passant != "-")
             {
-                const unsigned int col = passant[0] - 'a';
-                const unsigned int row = passant[1] - '1';
+                const int col = passant[0] - 'a';
+                const int row = passant[1] - '1';
 
                 enPassant = makeSquare(col, row);
             }

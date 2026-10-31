@@ -40,25 +40,25 @@ enum Square
     NO_SQUARE
 };
 
-constexpr int rankOf(Square sq) { return sq / 8; }
+[[nodiscard]] constexpr int rankOf(Square sq) noexcept { return sq / 8; }
 
-constexpr int fileOf(Square sq) { return sq % 8; }
+[[nodiscard]] constexpr int fileOf(Square sq) noexcept { return sq % 8; }
 
-constexpr Square makeSquare(int file, int rank) { return Square(rank * 8 + file); }
+[[nodiscard]] constexpr Square makeSquare(int file, int rank) noexcept { return Square(rank * 8 + file); }
 
-constexpr void setBit(Bitboard& bb, Square sq) { bb |= 1ULL << sq; }
+constexpr void setBit(Bitboard& bb, Square sq) noexcept { bb |= 1ULL << sq; }
 
-constexpr bool getBit(Bitboard bb, Square sq) { return bb & (1ULL << sq); }
+[[nodiscard]] constexpr bool getBit(Bitboard bb, Square sq) noexcept { return bb & (1ULL << sq); }
 
-constexpr void popBit(Bitboard& bb, Square sq) { bb &= ~(1ULL << sq); }
+constexpr void popBit(Bitboard& bb, Square sq) noexcept { bb &= ~(1ULL << sq); }
 
-constexpr int popCount(Bitboard bb) { return std::popcount(bb); }
+[[nodiscard]] constexpr int popCount(Bitboard bb) noexcept { return std::popcount(bb); }
 
-constexpr Square lsb(Bitboard bb) { return Square(std::countr_zero(bb)); }
+[[nodiscard]] constexpr Square lsb(Bitboard bb) noexcept { return Square(std::countr_zero(bb)); }
 
 constexpr Square popLsb(Bitboard& bb)
 {
-    Square sq = lsb(bb);
+    const Square sq = lsb(bb);
     bb &= bb - 1;
     return sq;
 }
