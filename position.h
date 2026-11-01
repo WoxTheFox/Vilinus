@@ -4,9 +4,7 @@
 #include <string>
 #include <sstream>
 
-
 #include "types.h"
-
 
 [[nodiscard]] inline bool fenToFigure(char fen, Color& color, PieceType& pieceType) noexcept
 {
@@ -117,14 +115,13 @@ struct Position
             }
         }
 
+        if (passant != "-")
+        {
+            const int col = passant[0] - 'a';
+            const int row = passant[1] - '1';
 
-            if (passant != "-")
-            {
-                const int col = passant[0] - 'a';
-                const int row = passant[1] - '1';
-
-                enPassant = makeSquare(col, row);
-            }
+            enPassant = makeSquare(col, row);
+        }
 
         updateOccupancy();
     }

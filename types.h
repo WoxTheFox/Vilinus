@@ -25,6 +25,14 @@ constexpr Bitboard FILE_F = FILE_A << 5;
 constexpr Bitboard FILE_G = FILE_A << 6;
 constexpr Bitboard FILE_H = FILE_A << 7;
 
+constexpr Bitboard NOT_A_FILE = ~FILE_A;
+constexpr Bitboard NOT_H_FILE = ~FILE_H;
+constexpr Bitboard NOT_AB_FILE = ~(FILE_A | FILE_B);
+constexpr Bitboard NOT_GH_FILE = ~(FILE_G | FILE_H);
+
+constexpr int ROOK_DIRECTIONS[4][2] = { {1, 0}, {-1, 0}, {0, 1}, {0, -1} };
+constexpr int BISHOP_DIRECTIONS[4][2] = {{1, 1}, {1, -1}, {-1, 1}, {-1, -1} };
+
 static_assert(RANK_8 == 0xFF00000000000000ULL);
 static_assert(FILE_H == 0x8080808080808080ULL, "FILE_H jest niepoprawnie zdefiniowanie");
 

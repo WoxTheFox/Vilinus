@@ -4,29 +4,22 @@
 #include "bitboard.h"
 #include "types.h"
 #include "position.h"
+#include "attacks.h"
 
 int main() {
 
-    Position pos;
+    initAttacks();
 
-    std::string startFen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
-    std::string kiwipete = "r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1";
+    Bitboard test = {};
+    setBit(test, D6);
+    setBit(test, F4);
+    setBit(test, F6);
 
-    Color color = BLACK;
-    PieceType type = PAWN;
-
-    pos.loadFen(startFen);
-
-    printBoard(pos.pieces[WHITE][PAWN]);
-    printBoard(pos.pieces[BLACK][KNIGHT]);
-    printBoard(pos.occupancy[BOTH]);
-
-    pos.loadFen(kiwipete);
-
-    std::cout << pos.pieces[WHITE][PAWN] << std::endl;
-    std::cout << pos.pieces[BLACK][KNIGHT] << std::endl;
-    std::cout << pos.occupancy[BOTH] << std::endl;
-
+    printBoard(rookAttacks(D4, 0));
+    printBoard(rookAttacks(D4, test));
+    printBoard(bishopAttacks(D4, 0));
+    printBoard(bishopAttacks(D4, test));
+    printBoard(queenAttacks(D4, 0));
 
     return 0;
 }
