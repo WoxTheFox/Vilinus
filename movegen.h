@@ -46,33 +46,75 @@ inline void generatePieceMoves(const Position& pos, MoveList& mvl, const PieceTy
     }
 }
 
-inline void generatePawnMoves(const Position& pos, MoveList& mvl)
+inline void addPawnMoves(MoveList& mvl, Bitboard destination, int offset, MoveFlags mvf) noexcept
+{
+    while (destination)
+    {
+        const Square to = popLsb(destination);
+        const auto from = static_cast<Square>(to - offset);
+        mvl.addMove(makeMove(from, to, mvf));
+    }
+}
+
+inline void addPawnPromotions(MoveList& mvl, Bitboard destination, int offset, bool isCapture) noexcept
+{
+    const int base = (isCapture ? (PROMOTION_KNIGHT_CAPTURE) : (PROMOTION_KNIGHT));
+
+    while (destination)
+    {
+        const Square to = popLsb(destination);
+        const auto from = static_cast<Square>(to - offset);
+        for (int i = 0; i < 4; i++)
+        {
+            mvl.addMove(makeMove(from, to,  static_cast<MoveFlags>(base + i)));
+        }
+    }
+
+}
+
+inline void generatePawnMoves(const Position& pos, MoveList& mvl) noexcept
 {
     const Color us = pos.onMove;
     const auto them = static_cast<Color>(us ^ 1);
-
-    Bitboard pawns = pos.pieces[us][PAWN];
-
+    const Bitboard pawns = pos.pieces[us][PAWN];
+    const Bitboard empty = ~ pos.occupancy[BOTH];
+    const Bitboard thirdRank = us == WHITE ? RANK_3 : RANK_6;
+    const Bitboard lastRank = us == WHITE ? RANK_8 : RANK_1;
     const int forward = us == WHITE ? 8 : -8;
-    const Bitboard start = us == WHITE ? RANK_2 : RANK_7;
+    const int leftDelta = us == WHITE ? 7 : -9;
+    const int rightDelta = us == WHITE ? 9 : -7;
 
-    while (pawns)
+    Bitboard singles = ((us == WHITE ? (pawns << 8) : (pawns >> 8)) & empty);
+    Bitboard doubles = (us == WHITE ? (singles & thirdRank) << 8 : (singles & thirdRank) >> 8) & empty;
+    Bitboard capturesLeft = ((us == WHITE ? (pawns << 7) : (pawns >> 9)) & pos.occupancy[them]) & NOT_H_FILE;
+    Bitboard capturesRight = ((us == WHITE ? (pawns << 9) : (pawns >> 7)) & pos.occupancy[them]) & NOT_A_FILE;
+
+    const Bitboard promotion = singles & lastRank;
+    Bitboard promotionLeft = capturesLeft & lastRank;
+    Bitboard promotionRight = capturesRight & lastRank;
+
+    if (pos.enPassant != NO_SQUARE)
     {
-        const Square from = popLsb(pawns);
-        const auto to = static_cast<Square>(from + forward);
+        Bitboard epCapture = PAWN_ATTACKS[them][pos.enPassant] & pawns;
 
-        if (!getBit(pos.occupancy[BOTH], to))
+        while (epCapture)
         {
-            mvl.addMove(makeMove(from, to, MOVE));
-
-            if (getBit(start, from))
-            {
-                const auto twoSquare = static_cast<Square>(from + forward*2);
-                if (!getBit(pos.occupancy[BOTH], twoSquare))
-                {
-                    mvl.addMove(makeMove(from, twoSquare, TWO_SQUARE_ADVANCE));
-                }
-            }
+            const Square from = popLsb(epCapture);
+            mvl.addMove(makeMove(from, pos.enPassant, EN_PASSANT));
         }
     }
+
+    singles &= ~lastRank;
+    capturesLeft &= ~lastRank;
+    capturesRight &= ~lastRank;
+
+    addPawnMoves(mvl, singles, forward, MOVE);
+    addPawnMoves(mvl, doubles, 2 * forward, TWO_SQUARE_ADVANCE);
+    addPawnMoves(mvl, capturesLeft, leftDelta, CAPTURE);
+    addPawnMoves(mvl, capturesRight, rightDelta, CAPTURE);
+
+    addPawnPromotions(mvl, promotion, forward, false);
+    addPawnPromotions(mvl, promotionLeft, leftDelta, true);
+    addPawnPromotions(mvl, promotionRight, rightDelta, true);
 }
+
