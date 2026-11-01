@@ -8,18 +8,8 @@
 
 int main() {
 
-    initAttacks();
-
-    Bitboard test = {};
-    setBit(test, D6);
-    setBit(test, F4);
-    setBit(test, F6);
-
-    printBoard(rookAttacks(D4, 0));
-    printBoard(rookAttacks(D4, test));
-    printBoard(bishopAttacks(D4, 0));
-    printBoard(bishopAttacks(D4, test));
-    printBoard(queenAttacks(D4, 0));
+    Move move = makeMove(H7, H8, PROMOTION_QUEEN_CAPTURE);
+    std::cout << getFrom(move) << " " << getTo(move) << " " << getFlag(move) << std::endl;
 
     return 0;
 }

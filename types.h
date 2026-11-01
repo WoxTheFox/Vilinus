@@ -3,9 +3,20 @@
 #include <cstdint>
 
 using Bitboard = uint64_t;
+using Move = uint16_t;
+
 enum Color {WHITE, BLACK, BOTH};
 enum PieceType {PAWN, KNIGHT, BISHOP, ROOK, QUEEN, KING};
 enum Castling {SHORT_WHITE = 1, LONG_WHITE = 2, SHORT_BLACK = 4, LONG_BLACK = 8};
+
+enum MoveFlags
+    {
+    MOVE = 0, TWO_SQUARE_ADVANCE = 1,
+    CASTLE_SHORT = 2, CASTLE_LONG = 3,
+    CAPTURE = 4, EN_PASSANT = 5,
+    PROMOTION_KNIGHT = 8, PROMOTION_BISHOP = 9, PROMOTION_ROOK = 10, PROMOTION_QUEEN = 11,
+    PROMOTION_KNIGHT_CAPTURE = 12, PROMOTION_BISHOP_CAPTURE = 13, PROMOTION_ROOK_CAPTURE = 14, PROMOTION_QUEEN_CAPTURE = 15
+    };
 
 constexpr Bitboard RANK_1 = 0xFFULL;
 constexpr Bitboard RANK_2 = RANK_1 << 8;
@@ -29,6 +40,8 @@ constexpr Bitboard NOT_A_FILE = ~FILE_A;
 constexpr Bitboard NOT_H_FILE = ~FILE_H;
 constexpr Bitboard NOT_AB_FILE = ~(FILE_A | FILE_B);
 constexpr Bitboard NOT_GH_FILE = ~(FILE_G | FILE_H);
+
+constexpr Move SQUARE_MASK = 0x3F;
 
 constexpr int ROOK_DIRECTIONS[4][2] = { {1, 0}, {-1, 0}, {0, 1}, {0, -1} };
 constexpr int BISHOP_DIRECTIONS[4][2] = {{1, 1}, {1, -1}, {-1, 1}, {-1, -1} };
@@ -70,6 +83,12 @@ constexpr Square popLsb(Bitboard& bb)
     bb &= bb - 1;
     return sq;
 }
+
+[[nodiscard]] constexpr Move makeMove(Square start, Square destination, MoveFlags type) noexcept { return static_cast<Move>(start | (destination << 6) | (type << 12)); }
+
+[[nodiscard]] constexpr Square getFrom(Move mv) noexcept { return static_cast<Square>(mv & SQUARE_MASK); }
+[[nodiscard]] constexpr Square getTo(Move mv) noexcept { return static_cast<Square>((mv >> 6) & SQUARE_MASK); }
+[[nodiscard]] constexpr MoveFlags getFlag(Move mv) noexcept { return static_cast<MoveFlags>((mv >> 12) & SQUARE_MASK); }
 
 
 

@@ -66,7 +66,7 @@ inline Bitboard PAWN_ATTACKS[2][64] = {};
     return attacks;
 }
 
-[[nodiscard]] constexpr Bitboard slidingAttacks(Square sq, Bitboard occupancy, const int directions[4][2]) noexcept
+[[nodiscard]] constexpr Bitboard slidingAttacks(const Square sq, const Bitboard occupancy, const int directions[4][2]) noexcept
 {
     const int rank = rankOf(sq);
     const int file = fileOf(sq);
@@ -79,7 +79,7 @@ inline Bitboard PAWN_ATTACKS[2][64] = {};
 
         for (int r = rank + dr, f = file + df; 0 <= r && r < 8 && 0 <= f && f < 8; r += dr, f += df)
         {
-            Square target = makeSquare(f, r);
+            const Square target = makeSquare(f, r);
             setBit(attacks, target);
 
             if (getBit(occupancy, target)) {break;}
