@@ -7,4 +7,5 @@ add_executable(Vilinus main.cpp
         types.h
         bitboard.h
         position.h
-        attacks.h)
+        attacks.h
+        movegen.h)

@@ -116,3 +116,21 @@ inline void initAttacks() noexcept
     }
 }
 
+[[nodiscard]] inline Bitboard pieceAttacks(PieceType type, Square sq, const Bitboard occupancy) noexcept
+{
+    switch (type)
+    {
+        case KNIGHT:
+            return KNIGHT_ATTACKS[sq];
+        case BISHOP:
+            return bishopAttacks(sq, occupancy);
+        case ROOK:
+            return rookAttacks(sq, occupancy);
+        case QUEEN:
+            return queenAttacks(sq, occupancy);
+        case KING:
+            return KING_ATTACKS[sq];
+        default:
+            return 0;
+    }
+}
